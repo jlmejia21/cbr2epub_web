@@ -2,69 +2,58 @@
 
 Convertidor de archivos CBR/CBZ a formato EPUB optimizado para Kindle e iPad.
 
-## Deployment en Render
+## Caracteristicas
 
-### Pasos:
+- Conversion de archivos CBR/CBZ a EPUB
+- Optimizacion automatica de imagenes
+- Soporte para metadatos (titulo, autor)
+- Interface web moderna con progreso en tiempo real
+- Procesamiento en segundo plano
 
-1. **Crear cuenta en Render** (render.com)
+## Estructura del Proyecto
 
-2. **Crear repositorio en GitHub** con estos archivos:
-   ```
-   cbr2epub_web/
-   ├── app.py
-   ├── requirements.txt
-   ├── Procfile
-   ├── templates/
-   │   └── index.html
-   └── lib/
-       ├── extractor.py
-       ├── image_proc.py
-       ├── epub_builder.py
-       └── utils.py
-   ```
+```
+cbr2epub_web/
+├── app.py              # Aplicacion Flask principal
+├── requirements.txt    # Dependencias Python
+├── templates/
+│   └── index.html      # Interface web
+└── lib/
+    ├── extractor.py     # Extraccion de archivos CBR/CBZ
+    ├── image_proc.py    # Procesamiento y optimizacion de imagenes
+    ├── epub_builder.py  # Construccion del archivo EPUB
+    ├── ai_upscale.py    # Escalado AI de imagenes
+    ├── utils.py         # Utilidades
+    └── models/          # Modelos AI (vacio, reservado para futuro)
+```
 
-3. **Conectar Render a GitHub:**
-   - New → Web Service
-   - Connect tu repositorio
-   - Configurar:
-     - **Build Command:** `pip install -r requirements.txt`
-     - **Start Command:** `gunicorn app:app --bind 0.0.0.0:$PORT`
+## Requisitos
 
-4. **Desplegar:**
-   - Click "Create Web Service"
-   - Esperar a que termine el build
-   - Obtener URL (ej: `https://cbr2epub.onrender.com`)
+- Python 3.9+
+- Flask 2.3+
+- Pillow 10.0+
+- gunicorn 21.0+
+- rarfile 4.0+
 
-### Configuracion en Render Dashboard:
-
-| Setting | Value |
-|---------|-------|
-| Environment | Python 3.9+ |
-| Build Command | `pip install -r requirements.txt` |
-| Start Command | `gunicorn app:app --bind 0.0.0.0:$PORT` |
-| Plan | Free (limitado a 512MB RAM) |
-
-### Notas Importantes:
-
-- **Memoria limitada:** El plan gratuito tiene 512MB. Archivos CBR grandes pueden fallar.
-- **Tiempo limite:** 30 segundos para requests.
-- **Archivos temporales:** Se borran automaticamente despues de descargar.
-
-### Para archivos grandes (>100MB):
-
-Considerar usar un VPS con mas recursos:
-- DigitalOcean ($4-6/mes)
-- Linode ($5-10/mes)
-- AWS EC2 (t2.micro gratis)
-
-### Locally:
+## Instalacion Local
 
 ```bash
 cd cbr2epub_web
 pip install -r requirements.txt
 python3 app.py
 # Abrir http://localhost:5000
-```# cbr2epub-web
-# cbr2epub-web
-# cbr2epub-web
-# cbr2epub-web
+```
+
+## API Endpoints
+
+| Endpoint | Metodo | Descripcion |
+|----------|--------|-------------|
+| `/` | GET | Pagina principal |
+| `/api/upload` | POST | Subir archivo e iniciar conversion |
+| `/api/status/<task_id>` | GET | Ver estado de la conversion |
+| `/api/download/<task_id>` | GET | Descargar EPUB completado |
+| `/api/cleanup` | POST | Limpiar archivos antiguos |
+
+## Licencia
+
+MIT
