@@ -25,7 +25,7 @@ from lib.utils import sort_pages_filenames, get_file_extension, sanitize_filenam
 MAX_IMAGE_SIZE = 20 * 1024 * 1024  # 20MB
 UPLOAD_FOLDER = '/tmp/cbr2epub_uploads'
 OUTPUT_FOLDER = '/tmp/cbr2epub_outputs'
-ALLOWED_EXTENSIONS = {'cbr', 'cbz'}
+ALLOWED_EXTENSIONS = {'cbz'}
 
 # Ensure directories exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -142,7 +142,7 @@ def upload():
         return jsonify({'error': 'No se selecciono archivo'}), 400
 
     if not allowed_file(file.filename):
-        return jsonify({'error': 'Formato no soportado. Usar CBR o CBZ.'}), 400
+        return jsonify({'error': 'Formato no soportado. Usar solo CBZ.'}), 400
 
     title = request.form.get('title', '').strip()
     if not title:

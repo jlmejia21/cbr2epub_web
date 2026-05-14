@@ -1,6 +1,5 @@
-"""Image extraction from CBR (RAR) and CBZ (ZIP) files."""
+"""Image extraction from CBZ (ZIP) files."""
 import os
-import rarfile
 import zipfile
 from PIL import Image
 import tempfile
@@ -10,9 +9,9 @@ from .utils import get_file_extension, file_exists
 
 
 class ArchiveExtractor:
-    """Extract images from CBR (RAR) or CBZ (ZIP) archives."""
+    """Extract images from CBZ (ZIP) archives."""
 
-    SUPPORTED_EXTENSIONS = {'.cbr', '.cbz'}
+    SUPPORTED_EXTENSIONS = {'.cbz'}
 
     def __init__(self, archive_path):
         if not file_exists(archive_path):
@@ -20,7 +19,7 @@ class ArchiveExtractor:
 
         ext = get_file_extension(archive_path)
         if ext not in self.SUPPORTED_EXTENSIONS:
-            raise ValueError(f"Formato no soportado: {ext}. Usar CBR o CBZ.")
+            raise ValueError(f"Formato no soportado: {ext}. Usar solo CBZ.")
 
         self.archive_path = archive_path
         self.ext = ext
@@ -34,12 +33,6 @@ class ArchiveExtractor:
         """Check if file is a supported image."""
         ext = os.path.splitext(filename)[1].lower()
         return ext in self._get_image_extensions()
-
-    def _extract_rar(self, temp_dir):
-        """Extract RAR archive."""
-        with rarfile.RarFile(self.archive_path) as rf:
-            rf.extractall(temp_dir)
-        return self._get_extracted_files(temp_dir)
 
     def _extract_zip(self, temp_dir):
         """Extract ZIP archive."""
@@ -61,10 +54,7 @@ class ArchiveExtractor:
         """Extract all images from archive to temporary directory."""
         self.temp_dir = tempfile.mkdtemp(prefix='cbr2epub_')
         try:
-            if self.ext == '.cbr':
-                files = self._extract_rar(self.temp_dir)
-            else:
-                files = self._extract_zip(self.temp_dir)
+            files = self._extract_zip(self.temp_dir)
 
             if not files:
                 raise ValueError("No se encontraron imagenes en el archivo.")
