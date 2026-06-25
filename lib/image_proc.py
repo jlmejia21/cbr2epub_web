@@ -1,10 +1,11 @@
+
 """Image processing for maximum quality Kindle/iPad optimization."""
 from PIL import Image
 import os
 
 
-MAX_IMAGE_SIZE_BYTES = 20 * 1024 * 1024
-TARGET_QUALITY = 98
+MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024  # 5MB max per image
+TARGET_QUALITY = 80  # Good balance quality/size
 
 
 def get_image_size_mb(filepath):

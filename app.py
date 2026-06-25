@@ -34,7 +34,7 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500MB max upload
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024 * 1024  # 2GB max upload
 
 # Store conversion tasks
 tasks = {}
@@ -112,6 +112,7 @@ def convert_task(task_id, archive_path, title, author, output_dir):
         extractor.cleanup()
 
         size_mb = os.path.getsize(output_path) / (1024 * 1024)
+        print(f"Conversion complete: {output_path}, size: {size_mb:.2f} MB")
 
         tasks[task_id]['status'] = 'completed'
         tasks[task_id]['progress'] = 100
@@ -208,8 +209,22 @@ def download(task_id):
     if not output_path or not os.path.exists(output_path):
         return jsonify({'error': 'Archivo no encontrado'}), 404
 
+    file_size = os.path.getsize(output_path)
     safe_title = sanitize_filename(task['title']) or 'output'
     filename = f'{safe_title}.epub'
+
+    import zipfile
+    try:
+        with zipfile.ZipFile(output_path, 'r') as zf:
+            bad_file = zf.testzip()
+            if bad_file:
+                print(f"WARNING: Corrupt file in EPUB: {bad_file}")
+                return jsonify({'error': 'EPUB corrupto'}), 500
+    except Exception as e:
+        print(f"ERROR validating EPUB: {e}")
+        return jsonify({'error': 'EPUB corrupto'}), 500
+
+    print(f"Download: {filename}, size: {file_size} bytes")
 
     return send_file(output_path, as_attachment=True, download_name=filename)
 
